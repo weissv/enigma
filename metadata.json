@@ -1,0 +1,5 @@
+
+{
+  "name": "Enigma Simulator",
+  "description": "A React application that simulates the Enigma machine, allowing users to configure rotors and reflectors to encrypt and decrypt messages."
+}

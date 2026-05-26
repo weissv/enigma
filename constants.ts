@@ -43,5 +43,5 @@ export const INITIAL_ROTOR_SETTINGS: RotorSetting[] = [
 
 export const INITIAL_REFLECTOR: ReflectorName = 'B';
 
-export const charToIndex = (char: string): number => ALPHABET.indexOf(char.toUpperCase());
-export const indexToChar = (index: number): string => ALPHABET[index];
+export const charToIndex = (char: string): number => char.toUpperCase().charCodeAt(0) - 65;
+export const indexToChar = (index: number): string => String.fromCharCode(index + 65);

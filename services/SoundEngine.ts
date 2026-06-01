@@ -38,100 +38,114 @@ class SoundEngine {
     if (!this.enabled || !this.ctx) return;
     const time = this.ctx.currentTime;
     
-    // 1. Mechanical Clack (Filtered White Noise)
-    const bufferSize = this.ctx.sampleRate * 0.03; // 30ms burst
+    // 1. Mechanical "Clack"
+    // We use a short burst of noise for the physical impact
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.05); // 50ms
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
       data[i] = Math.random() * 2 - 1;
     }
-    
     const noise = this.ctx.createBufferSource();
     noise.buffer = buffer;
     
-    // Filter the noise to sound like a metallic/plastic keycap impact
+    // Bandpass to focus on the 'clack' frequencies
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(3500, time);
-    filter.Q.value = 1.2;
+    filter.frequency.setValueAtTime(2000, time);
+    filter.Q.value = 1.0;
     
     const noiseGain = this.ctx.createGain();
-    // Very sharp attack and decay
-    noiseGain.gain.setValueAtTime(1.0, time);
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.025);
+    noiseGain.gain.setValueAtTime(1.5, time); // Loud impact
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
     
     noise.connect(filter);
     filter.connect(noiseGain);
     noiseGain.connect(this.ctx.destination);
     
-    // 2. Body Resonance (Low frequency "thwack")
+    // 2. Body thud
+    // Use a square wave so it has harmonics and is audible on laptop speakers
     const osc = this.ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(120, time);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(250, time);
     
     const oscGain = this.ctx.createGain();
-    oscGain.gain.setValueAtTime(0.2, time);
-    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.03);
+    oscGain.gain.setValueAtTime(0.4, time);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
     
     osc.connect(oscGain);
     oscGain.connect(this.ctx.destination);
     
     noise.start(time);
     osc.start(time);
-    osc.stop(time + 0.03);
+    osc.stop(time + 0.05);
   }
 
   /**
-   * Low-frequency heavy thud for physical rotor stepping.
+   * Heavy mechanical "Kachunk" for physical rotor stepping.
    */
   public playRotorStep(isDoubleStep: boolean = false) {
     if (!this.enabled || !this.ctx) return;
     const time = this.ctx.currentTime;
     
-    // 1. Sliding Metal Friction (Lowpass Noise)
-    const bufferSize = this.ctx.sampleRate * 0.08; // 80ms friction
+    // 1. Sliding Metal Friction
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.12); // 120ms
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
       data[i] = Math.random() * 2 - 1;
     }
-    
     const noise = this.ctx.createBufferSource();
     noise.buffer = buffer;
     
     const noiseFilter = this.ctx.createBiquadFilter();
     noiseFilter.type = 'lowpass';
-    noiseFilter.frequency.setValueAtTime(600, time);
+    noiseFilter.frequency.setValueAtTime(1500, time); // More high end for metal grind
     
     const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.4, time);
-    noiseGain.gain.linearRampToValueAtTime(0.01, time + 0.08);
+    noiseGain.gain.setValueAtTime(0.8, time);
+    noiseGain.gain.linearRampToValueAtTime(0.01, time + 0.12);
     
     noise.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
     noiseGain.connect(this.ctx.destination);
     
-    // 2. Heavy Rotor Thud (Sine wave)
+    // 2. Heavy Rotor "Chunk"
+    // Using square wave to guarantee it cuts through small speakers
     const osc = this.ctx.createOscillator();
-    osc.type = 'sine';
-    // Deep thud, slightly deeper if double step
-    const freq = isDoubleStep ? 50 : 65;
+    osc.type = 'square';
+    
+    const freq = isDoubleStep ? 80 : 120;
     osc.frequency.setValueAtTime(freq, time);
     
     const oscGain = this.ctx.createGain();
-    const peakVolume = isDoubleStep ? 1.5 : 0.8;
+    const peakVolume = isDoubleStep ? 1.5 : 1.0;
     
-    // Smooth but fast envelope for a heavy object locking into place
     oscGain.gain.setValueAtTime(0.001, time);
-    oscGain.gain.linearRampToValueAtTime(peakVolume, time + 0.01);
-    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.08);
+    oscGain.gain.linearRampToValueAtTime(peakVolume, time + 0.02);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15); // Longer decay so it feels heavy
+    
+    // Optional second harmonic to add metallic clank
+    const osc2 = this.ctx.createOscillator();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(freq * 3.5, time);
+    
+    const osc2Gain = this.ctx.createGain();
+    osc2Gain.gain.setValueAtTime(peakVolume * 0.5, time);
+    osc2Gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
     
     osc.connect(oscGain);
     oscGain.connect(this.ctx.destination);
     
+    osc2.connect(osc2Gain);
+    osc2Gain.connect(this.ctx.destination);
+    
     noise.start(time);
     osc.start(time);
-    osc.stop(time + 0.08);
+    osc2.start(time);
+    
+    osc.stop(time + 0.15);
+    osc2.stop(time + 0.1);
   }
 }
 

@@ -51,12 +51,12 @@ class SoundEngine {
     
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.value = 2000;
-    filter.Q.value = 0.5;
+    filter.frequency.value = 1500; // slightly lower for a solid clack
+    filter.Q.value = 1.0;
     
     const gainNode = this.ctx.createGain();
-    gainNode.gain.setValueAtTime(0.3, time);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.04);
+    gainNode.gain.setValueAtTime(0.5, time);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
     
     noise.connect(filter);
     filter.connect(gainNode);
@@ -93,5 +93,6 @@ class SoundEngine {
   }
 }
 
-// Singleton instance
-export const soundEngine = new SoundEngine();
+// Singleton instance surviving HMR
+export const soundEngine = (window as any).__soundEngine || new SoundEngine();
+(window as any).__soundEngine = soundEngine;

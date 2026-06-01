@@ -155,7 +155,7 @@ h1, h2, h3, h4 {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(300px, 350px) 1fr minmax(350px, 450px);
+  grid-template-columns: minmax(380px, 450px) 1fr minmax(350px, 420px);
   grid-template-areas:
     "archives archives      archives"
     "controls glassbox      cryptanalysis"
@@ -191,7 +191,7 @@ h1, h2, h3, h4 {
 
 .area-archives      { grid-area: archives; }
 .area-controls      { grid-area: controls; }
-.area-glassbox      { grid-area: glassbox; position: sticky; top: 20px; }
+.area-glassbox      { grid-area: glassbox; }
 .area-io            { grid-area: io; }
 .area-cryptanalysis { grid-area: cryptanalysis; }
 .area-bombe         { grid-area: bombe; }
@@ -409,14 +409,19 @@ h1, h2, h3, h4 {
 
 /* ── Control Panel ───────────────────────────────────────────────── */
 .rotor-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: var(--gap-md);
+  justify-content: space-between;
+}
+
+.rotor-grid > * {
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 600px) {
   .rotor-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
 

@@ -6,9 +6,10 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { BombeService } from '../services/BombeService';
+import { SwarmOrchestrator } from '../workers/SwarmOrchestrator';
 import type { BombeConfig, BombeCandidate, BombeResult } from '../types/cryptanalysis.types';
 import { BombeStatus } from '../types/cryptanalysis.types';
+import type { TelemetryPayload } from '../types/worker.types';
 
 export interface UseBombeReturn {
   /** Current Bombe status */
@@ -28,6 +29,9 @@ export interface UseBombeReturn {
 
   /** Final result after completion */
   result: BombeResult | null;
+
+  /** Real-time telemetry from Hill Climbing algorithm */
+  telemetry: TelemetryPayload | null;
 
   /** Error message if any */
   error: string | null;
@@ -49,9 +53,10 @@ export function useBombe(): UseBombeReturn {
   const [percentComplete, setPercentComplete] = useState(0);
   const [candidates, setCandidates] = useState<BombeCandidate[]>([]);
   const [result, setResult] = useState<BombeResult | null>(null);
+  const [telemetry, setTelemetry] = useState<TelemetryPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const bombeRef = useRef<BombeService>(new BombeService());
+  const bombeRef = useRef<SwarmOrchestrator>(new SwarmOrchestrator());
   const cleanupRef = useRef<(() => void) | null>(null);
 
   // Cleanup on unmount
@@ -69,6 +74,7 @@ export function useBombe(): UseBombeReturn {
     setPercentComplete(0);
     setCandidates([]);
     setResult(null);
+    setTelemetry(null);
     setError(null);
 
     cleanupRef.current = bombeRef.current.start(config, {
@@ -91,6 +97,9 @@ export function useBombe(): UseBombeReturn {
       onStatusChange: (newStatus) => {
         setStatus(newStatus);
       },
+      onTelemetry: (payload) => {
+        setTelemetry(payload);
+      },
     });
   }, []);
 
@@ -107,6 +116,7 @@ export function useBombe(): UseBombeReturn {
     setPercentComplete(0);
     setCandidates([]);
     setResult(null);
+    setTelemetry(null);
     setError(null);
   }, []);
 
@@ -117,6 +127,7 @@ export function useBombe(): UseBombeReturn {
     percentComplete,
     candidates,
     result,
+    telemetry,
     error,
     start,
     cancel,

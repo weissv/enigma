@@ -6,6 +6,7 @@
 import React from 'react';
 
 interface DashboardLayoutProps {
+  archives: React.ReactNode;
   controls: React.ReactNode;
   glassbox: React.ReactNode;
   io: React.ReactNode;
@@ -14,6 +15,7 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  archives,
   controls,
   glassbox,
   io,
@@ -21,6 +23,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   bombe,
 }) => (
   <div className="dashboard-grid">
+    <div className="area-archives">{archives}</div>
     <div className="area-controls">{controls}</div>
     <div className="area-glassbox">{glassbox}</div>
     <div className="area-io">{io}</div>

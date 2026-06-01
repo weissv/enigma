@@ -1,102 +1,52 @@
-# Enigma Cryptanalysis Platform
+# Enigma // Cryptanalysis Platform (v3.0 Research Build)
 
-A modern, highly accurate web-based implementation of the legendary **Enigma M3** cryptographic machine from World War II. Built with React and TypeScript, this project has evolved from a basic simulator into a full-fledged research platform for **mechanistic interpretability** and **cryptanalysis**.
+A high-performance, web-based Enigma machine simulator and cryptanalysis tool designed for mechanistic interpretability and advanced brute-force attacks.
 
-## 🎯 Overview
+## 🚀 Phase 3 Upgrades
+We have completely overhauled the architecture to shift from a linear MVP to a parallelized research environment, wrapped in a beautiful **Cyber-Ukiyo-e** aesthetic.
 
-The Enigma Cryptanalysis Platform allows you to not only encrypt and decrypt messages with historical accuracy but also to "look inside the box" to understand exactly how the electrical signals flow through the machine. Furthermore, it provides built-in statistical tools and a brute-force engine to simulate historical code-breaking techniques.
+### 1. Swarm Intelligence (Web Workers)
+The Turing Bombe logic is now powered by a **Multi-Agent Swarm** utilizing `navigator.hardwareConcurrency` and a `BroadcastChannel` Event Bus:
+- **Agent Alpha:** Sweeps through the massive 17,576 * 60 rotor/reflector configurations. Upon finding a baseline Index of Coincidence (IC > 0.040), it broadcasts the configuration to the Swarm.
+- **Agent Betas:** A dynamic pool of agents that listen to the Event Bus and perform parallelized Hill Climbing to find optimal Steckerbrett (plugboard) mutations.
+- **Agent Gamma:** Dedicated to graph loop detection (Turing Menus) during Crib Dragging.
 
-### Key Modules
+### 2. WebAssembly (WASM) Engine
+The core mathematical brute-force engine has been ported from TypeScript to **AssemblyScript (WASM)**. This dramatically accelerates permutation testing and array manipulations, completely eliminating UI lag during deep tree searches.
 
-#### 1. ⚙️ Core Enigma Engine
-- **Accurate Simulation**: M3 Wehrmacht Enigma with 5 interchangeable rotors (I-V) and 2 reflectors (B, C).
-- **Mechanical Precision**: Implements correct wiring, ring settings, and the famous "double-step anomaly" for the rotor turnover mechanism.
+### 3. Topological Entropy Visualization (Big Freeze)
+Replaced the static 2D Shannon Entropy Matrix with `BigFreeze3D`—a stunning thermodynamic visualization of the $10^{23}$ keyspace. 
+- **Chaos:** High entropy (gibberish text) causes 3,000 WebGL particles to fly in rapid Brownian motion with a Cinnabar heat-glow.
+- **Big Freeze:** As the swarm discovers the key, the entropy drops to zero, and the simulation instantly "freezes" the particles into a rigid, gold-glowing crystalline lattice.
 
-#### 2. 🔍 Glass Box (Mechanistic Interpretability)
-- **Signal Trace**: A complete 9-step electrical trace of every character processed (Input → R → M → L → Reflector → L⁻¹ → M⁻¹ → R⁻¹ → Output).
-- **SVG Diagrams**: Visualizes the exact path of the signal through the components.
-- **Timeline**: A clickable timeline to inspect the internal state of the machine at any point during the message.
+### 4. Cyber-Ukiyo-e Aesthetic
+The UI has evolved from standard Brutalism to **Cyber-Ukiyo-e**:
+- Deep Kuro-Tobi (Indigo) voids `#0a0b12`
+- Cinnabar/Vermilion accents `#e34234`
+- Faded Gold glows `#d4af37`
+- Traditional Japanese Hanko seals used for graph nodes.
+- Flowing bezier waves (`CatmullRomLine`) map the signal path through the Glass Box.
 
-#### 3. 📊 Cryptanalysis Dashboard
-- **Frequency Analysis**: Real-time evaluation of character distribution compared against standard English frequencies, complete with a custom SVG chart and $\chi^2$ statistic.
-- **Index of Coincidence (IC)**: Visual meter assessing the randomness of the ciphertext to identify monoalphabetic vs. polyalphabetic properties.
+---
 
-#### 4. 💣 Turing Bombe (Brute-Force)
-- **Web Worker Engine**: A multi-threaded brute-force search engine running in a background Web Worker to avoid freezing the UI.
-- **Crib-based Cracking**: Input a known plaintext "crib" to search for the correct initial rotor positions, types, and reflector.
-- **Candidate Scoring**: Automatically evaluates potential solutions using the Index of Coincidence to rank candidates.
+## 💻 Tech Stack
+- **React 18 + Vite**
+- **TypeScript** (Strict Mode)
+- **WebAssembly (AssemblyScript)** for the Bombe engine
+- **Web Workers + BroadcastChannel** for Swarm Orchestration
+- **React Three Fiber / Drei** for WebGL visualizations
+- **CSS3 Variables & Grid** (Zero-dependency styling)
 
-## 🎨 UI & Design
+## 🏃‍♂️ Running Locally
 
-The platform features a custom **Cyberpunk / Noir aesthetic**, strictly avoiding generic utility classes in favor of a bespoke vanilla CSS design system.
-- Monospaced typography for high information density.
-- Zero external UI dependencies (no D3, no Recharts, no Tailwind).
-- Dynamic CSS grid layout (Dashboard mode).
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ with npm or yarn
-
-### Installation
-```bash
-# Clone the repository
-git clone https://github.com/weissv/enigma.git
-cd enigma
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-The application will be available at `http://localhost:5173`.
-
-### Building for Production
-```bash
-npm run build
-```
-Builds are heavily optimized, with the Turing Bombe offloaded to a separate chunk.
-
-## 🛠 Technical Architecture
-
-The codebase is structured to enforce a strict separation of concerns, isolating complex cryptographic logic from React components.
-
-```
-enigma/
-├── src/
-│   ├── components/       # UI Components (shared, layout, glassbox, cryptanalysis)
-│   ├── hooks/            # React Hooks (useEnigma, useBombe, useSignalTrace, etc.)
-│   ├── services/         # Core Logic Classes (EnigmaService, BombeService, etc.)
-│   ├── types/            # Strict TypeScript definitions
-│   ├── utils/            # Math and formatting helpers
-│   ├── workers/          # Web Workers (bombe.worker.ts)
-│   ├── App.tsx           # Dashboard layout orchestrator
-│   └── index.css         # Cyberpunk design system tokens
-```
-
-### Key Services
-- `enigmaService.ts`: The core M3 emulator. Supports `processStringTraced()` which captures the machine state before and after every character.
-- `SignalTraceService.ts`: Manages the trace timeline and normalizes component states for the Glass Box UI.
-- `CryptanalysisService.ts`: Static utilities for text metrics (IC, Chi-Squared).
-- `BombeService.ts`: Manages the lifecycle of the Web Worker and parses messages into React state.
-
-## 📖 Educational Context
-
-This platform is designed to teach both cryptography and modern web engineering:
-- **Cryptography**: Demonstrates why simple substitution fails, how polyalphabetic ciphers work, and how a known-plaintext attack (Crib) can reduce a massive search space.
-- **Engineering**: Showcases state management with complex domains, separating heavy computation into Web Workers, and rendering custom SVG visualizations from scratch.
-
-## ⚠️ Security Warning
-
-This simulator uses historically accurate WWII algorithms. It is **fundamentally broken** and insecure by modern standards. It can be cracked by the built-in Turing Bombe simulator in your browser within seconds. Do not use this for actual secure communication.
-
-## 🔮 Future Roadmap (Phase 2)
-
-- **Plugboard (Steckerbrett)**: Add the missing piece of the M3 machine to increase the cryptographic complexity.
-- **Animated Signal Path**: Step-by-step playback of the electrical current.
-- **Crib-graph Visualization**: Display the "menus" (loops of letters) used by the historical Bombe to eliminate incorrect settings.
-
-## 📄 License
-
-Open source under the MIT License.
+## 🌐 Localization (i18n)
+The interface supports dynamic switching between English and Russian via the language toggle in the header.

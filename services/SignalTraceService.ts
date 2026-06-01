@@ -73,12 +73,10 @@ export class SignalTraceService {
     });
     signal = signalAfterPlugFwd;
 
-    // ── Steps 2-4: Forward pass (Right → Middle → Left) ─────
-    const forwardStages = [
-      TraceStage.ROTOR_R_FWD,
-      TraceStage.ROTOR_M_FWD,
-      TraceStage.ROTOR_L_FWD,
-    ];
+    // ── Steps 2-4/5: Forward pass (Right → Middle → Left → 4th) ─────
+    const forwardStages = rotors.length === 4 
+      ? [TraceStage.ROTOR_R_FWD, TraceStage.ROTOR_M_FWD, TraceStage.ROTOR_L_FWD, TraceStage.ROTOR_4_FWD]
+      : [TraceStage.ROTOR_R_FWD, TraceStage.ROTOR_M_FWD, TraceStage.ROTOR_L_FWD];
 
     for (let i = rotors.length - 1; i >= 0; i--) {
       const rotor = rotors[i];
@@ -108,12 +106,10 @@ export class SignalTraceService {
       componentState: this.captureReflectorState(reflector),
     });
 
-    // ── Steps 5-7: Backward pass (Left → Middle → Right) ────
-    const backwardStages = [
-      TraceStage.ROTOR_L_INV,
-      TraceStage.ROTOR_M_INV,
-      TraceStage.ROTOR_R_INV,
-    ];
+    // ── Steps 5-7/8: Backward pass (4th → Left → Middle → Right) ────
+    const backwardStages = rotors.length === 4
+      ? [TraceStage.ROTOR_4_INV, TraceStage.ROTOR_L_INV, TraceStage.ROTOR_M_INV, TraceStage.ROTOR_R_INV]
+      : [TraceStage.ROTOR_L_INV, TraceStage.ROTOR_M_INV, TraceStage.ROTOR_R_INV];
 
     for (let i = 0; i < rotors.length; i++) {
       const rotor = rotors[i];

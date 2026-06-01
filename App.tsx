@@ -14,23 +14,29 @@ import { useEnigma } from './hooks/useEnigma';
 import { useSignalTrace } from './hooks/useSignalTrace';
 import { useCryptanalysis } from './hooks/useCryptanalysis';
 import { useBombe } from './hooks/useBombe';
+import { useShareableURL } from './hooks/useShareableURL';
+import { useI18n } from './utils/i18n';
+import type { EnigmaConfig } from './types/enigma.types';
 
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { DashboardLayout } from './components/layout/DashboardLayout';
+import { HistoricalArchives } from './components/layout/HistoricalArchives';
 import { ControlPanel } from './components/ControlPanel';
 import { IOArea } from './components/IOArea';
 import { Panel } from './components/shared/Panel';
 import { Badge } from './components/shared/Badge';
+import { HistoricalMission } from './data/historicalArchives';
 
 // Glass Box
-import { SignalPathDiagram } from './components/glassbox/SignalPathDiagram';
+import { GlassBox3D } from './components/glassbox/GlassBox3D';
 import { TraceStepDetail } from './components/glassbox/TraceStepDetail';
 import { RotorWiringView } from './components/glassbox/RotorWiringView';
 import { CharacterTraceTimeline } from './components/glassbox/CharacterTraceTimeline';
 
 // Cryptanalysis
 import { FrequencyChart } from './components/cryptanalysis/FrequencyChart';
+import { BigFreeze3D } from './components/cryptanalysis/BigFreeze3D';
 import { ICDisplay } from './components/cryptanalysis/ICDisplay';
 import { BombePanel } from './components/cryptanalysis/BombePanel';
 import { BombeResultsTable } from './components/cryptanalysis/BombeResultsTable';
@@ -38,6 +44,9 @@ import { BombeResultsTable } from './components/cryptanalysis/BombeResultsTable'
 import { BombeStatus } from './types/cryptanalysis.types';
 
 const App: React.FC = () => {
+  // ── I18n ──
+  const { t } = useI18n();
+
   // ── Core Enigma State ──
   const {
     inputText,
@@ -51,7 +60,28 @@ const App: React.FC = () => {
     setReflectorType,
     setPlugboardConfig,
     resetSettings,
+    setRotorSettings,
+    setInputText,
+    machineType,
+    handleMachineTypeChange,
   } = useEnigma();
+
+  // ── Shareable URL State ──
+  const { copyShareLink } = useShareableURL(
+    { rotors: rotorSettings, reflector: reflectorType, plugboard: plugboardConfig },
+    (loadedConfig: EnigmaConfig) => {
+      setRotorSettings(loadedConfig.rotors);
+      setReflectorType(loadedConfig.reflector);
+      setPlugboardConfig(loadedConfig.plugboard);
+    }
+  );
+
+  const handleLoadMission = (mission: HistoricalMission) => {
+    setRotorSettings(mission.config.rotors);
+    setReflectorType(mission.config.reflector);
+    setPlugboardConfig(mission.config.plugboard);
+    setInputText(mission.plaintext);
+  };
 
   // ── Signal Trace (Glass Box) ──
   const {
@@ -75,6 +105,22 @@ const App: React.FC = () => {
   // ── Turing Bombe ──
   const bombe = useBombe();
 
+  // Calculate Entropy for BigFreeze
+  const activeText = outputText || inputText || '';
+  const calculateEntropy = (text: string) => {
+    if (!text) return 4.7;
+    const freqs: Record<string, number> = {};
+    for (const char of text) freqs[char] = (freqs[char] || 0) + 1;
+    let h = 0;
+    for (const char in freqs) {
+      const p = freqs[char] / text.length;
+      h -= p * Math.log2(p);
+    }
+    return h;
+  };
+  const currentEntropy = calculateEntropy(activeText);
+  const isCracked = bombe.status === BombeStatus.COMPLETED && bombe.candidates.length > 0;
+
   const bombeStatusBadge = {
     [BombeStatus.IDLE]:      { variant: 'idle' as const, label: 'Idle' },
     [BombeStatus.RUNNING]:   { variant: 'running' as const, label: 'Running' },
@@ -86,11 +132,16 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      <Header />
+      <Header onShare={copyShareLink} />
 
       <DashboardLayout
+        archives={
+          <HistoricalArchives onLoadMission={handleLoadMission} />
+        }
         controls={
           <ControlPanel
+            machineType={machineType}
+            onMachineTypeChange={handleMachineTypeChange}
             rotorSettings={rotorSettings}
             reflectorType={reflectorType}
             plugboardConfig={plugboardConfig}
@@ -103,7 +154,7 @@ const App: React.FC = () => {
 
         glassbox={
           <Panel
-            title="Glass Box // Signal Trace"
+            title={t('areaGlassbox')}
             active={!!selectedTrace}
             badge={
               totalTraced > 0
@@ -115,7 +166,7 @@ const App: React.FC = () => {
                 : undefined
             }
           >
-            <SignalPathDiagram trace={selectedTrace} />
+            <GlassBox3D trace={selectedTrace} />
             <TraceStepDetail trace={selectedTrace} />
             <RotorWiringView trace={selectedTrace} />
             <CharacterTraceTimeline
@@ -127,7 +178,7 @@ const App: React.FC = () => {
         }
 
         io={
-          <Panel title="I/O Terminal">
+          <Panel title={t('areaIO')}>
             <IOArea
               inputText={inputText}
               outputText={outputText}
@@ -137,15 +188,18 @@ const App: React.FC = () => {
         }
 
         cryptanalysis={
-          <Panel title="Cryptanalysis // Statistics">
-            <FrequencyChart analysis={frequencyAnalysis} />
+          <Panel title={t('areaCryptanalysis')}>
+            <BigFreeze3D currentEntropy={currentEntropy} isCracked={isCracked} />
+            <div className="mt-md">
+              <FrequencyChart analysis={frequencyAnalysis} />
+            </div>
             <ICDisplay icResult={icResult} />
           </Panel>
         }
 
         bombe={
           <Panel
-            title="Turing Bombe // Brute Force"
+            title={t('areaBombe')}
             badge={<Badge {...bombeStatusBadge[bombe.status]} />}
           >
             <BombePanel
@@ -155,6 +209,7 @@ const App: React.FC = () => {
               total={bombe.total}
               percentComplete={bombe.percentComplete}
               error={bombe.error}
+              telemetry={bombe.telemetry}
               onStart={bombe.start}
               onCancel={bombe.cancel}
               onReset={bombe.reset}

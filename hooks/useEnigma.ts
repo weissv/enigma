@@ -9,8 +9,9 @@ import { useState, useCallback, useEffect } from 'react';
 import { RotorSetting, PlugboardConfig } from '../types/enigma.types';
 import type { EnigmaConfig } from '../types/enigma.types';
 import type { MessageTrace } from '../types/trace.types';
-import { INITIAL_ROTOR_SETTINGS, INITIAL_REFLECTOR, ReflectorName } from '../constants';
+import { INITIAL_ROTOR_SETTINGS, INITIAL_REFLECTOR, INITIAL_M4_ROTOR_SETTINGS, INITIAL_M4_REFLECTOR, ReflectorName } from '../constants';
 import { EnigmaMachine } from '../services/enigmaService';
+import { soundEngine } from '../services/SoundEngine';
 
 export const useEnigma = () => {
   const [inputText, setInputText] = useState<string>('');
@@ -24,6 +25,18 @@ export const useEnigma = () => {
     setRotorSettings(prevSettings =>
       prevSettings.map(rs => (rs.id === updatedRotorSetting.id ? updatedRotorSetting : rs))
     );
+  }, []);
+
+  const machineType: 'M3' | 'M4' = rotorSettings.length === 4 ? 'M4' : 'M3';
+
+  const handleMachineTypeChange = useCallback((type: 'M3' | 'M4') => {
+    if (type === 'M4') {
+      setRotorSettings(INITIAL_M4_ROTOR_SETTINGS);
+      setReflectorType(INITIAL_M4_REFLECTOR);
+    } else {
+      setRotorSettings(INITIAL_ROTOR_SETTINGS);
+      setReflectorType(INITIAL_REFLECTOR);
+    }
   }, []);
 
   const processText = useCallback(() => {
@@ -51,7 +64,13 @@ export const useEnigma = () => {
   }, [inputText, rotorSettings, reflectorType, plugboardConfig, processText]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputText(e.target.value.toUpperCase());
+    const newVal = e.target.value.toUpperCase();
+    if (newVal.length > inputText.length && soundEngine.isEnabled()) {
+      soundEngine.playKeyClick();
+      // Simulate physical rotor step thud
+      setTimeout(() => soundEngine.playRotorStep(Math.random() > 0.9), 30);
+    }
+    setInputText(newVal);
   };
 
   const resetSettings = () => {
@@ -72,8 +91,12 @@ export const useEnigma = () => {
     messageTrace,
     handleInputChange,
     handleRotorSettingChange,
+    setRotorSettings,
     setReflectorType,
     setPlugboardConfig,
     resetSettings,
+    setInputText,
+    machineType,
+    handleMachineTypeChange,
   };
 };

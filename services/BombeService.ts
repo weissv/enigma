@@ -15,6 +15,7 @@ import { BombeStatus } from '../types/cryptanalysis.types';
 import type {
   BombeWorkerMessage,
   BombeWorkerResponse,
+  TelemetryPayload,
 } from '../types/worker.types';
 
 export interface BombeCallbacks {
@@ -23,6 +24,7 @@ export interface BombeCallbacks {
   onComplete: (result: BombeResult) => void;
   onError: (message: string) => void;
   onStatusChange?: (status: BombeStatus) => void;
+  onTelemetry?: (payload: TelemetryPayload) => void;
 }
 
 export class BombeService {
@@ -63,6 +65,10 @@ export class BombeService {
       const msg = event.data;
 
       switch (msg.type) {
+        case 'TELEMETRY':
+          callbacks.onTelemetry?.(msg.payload);
+          break;
+
         case 'PROGRESS':
           callbacks.onProgress(msg.tested, msg.total, msg.percentComplete);
           break;

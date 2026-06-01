@@ -6,7 +6,10 @@
 import React, { useState } from 'react';
 import type { BombeConfig } from '../../types/cryptanalysis.types';
 import { BombeStatus } from '../../types/cryptanalysis.types';
+import type { TelemetryPayload } from '../../types/worker.types';
 import { formatNumber } from '../../utils/formatting';
+import { BombeTelemetryView } from './BombeTelemetryView';
+import { CribGraph } from './CribGraph';
 
 interface BombePanelProps {
   ciphertext: string;
@@ -15,6 +18,7 @@ interface BombePanelProps {
   total: number;
   percentComplete: number;
   error: string | null;
+  telemetry: TelemetryPayload | null;
   onStart: (config: BombeConfig) => void;
   onCancel: () => void;
   onReset: () => void;
@@ -29,6 +33,7 @@ export const BombePanel: React.FC<BombePanelProps> = ({
   total,
   percentComplete,
   error,
+  telemetry,
   onStart,
   onCancel,
   onReset,
@@ -108,6 +113,20 @@ export const BombePanel: React.FC<BombePanelProps> = ({
             <span>{formatNumber(tested)} / {formatNumber(total)} configs</span>
             <span>{percentComplete.toFixed(1)}%</span>
           </div>
+        </div>
+      )}
+
+
+
+      {/* Real-time Telemetry Dashboard */}
+      {(telemetry || status === BombeStatus.RUNNING) && (
+        <BombeTelemetryView telemetry={telemetry} status={status} />
+      )}
+
+      {/* Crib Graph (Turing Bombe Menu) */}
+      {crib.trim().length > 0 && ciphertext.trim().length > 0 && (
+        <div className="mt-md" style={{ height: 400 }}>
+          <CribGraph ciphertext={ciphertext} crib={crib} />
         </div>
       )}
 

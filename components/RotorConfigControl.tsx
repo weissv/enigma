@@ -11,12 +11,14 @@ interface RotorConfigControlProps {
   rotorSetting: RotorSetting;
   onRotorSettingChange: (updatedRotorSetting: RotorSetting) => void;
   rotorLabel: string;
+  isFourthRotor?: boolean;
 }
 
 const RotorConfigControl: React.FC<RotorConfigControlProps> = ({
   rotorSetting,
   onRotorSettingChange,
   rotorLabel,
+  isFourthRotor = false,
 }) => {
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onRotorSettingChange({ ...rotorSetting, type: e.target.value as RotorName });
@@ -37,7 +39,7 @@ const RotorConfigControl: React.FC<RotorConfigControlProps> = ({
       <div>
         <label className="label">Rotor</label>
         <select className="select" value={rotorSetting.type} onChange={handleTypeChange}>
-          {AVAILABLE_ROTORS_LIST.map(r => (
+          {AVAILABLE_ROTORS_LIST.filter(r => isFourthRotor ? (r === 'Beta' || r === 'Gamma') : (r !== 'Beta' && r !== 'Gamma')).map(r => (
             <option key={r} value={r}>{r}</option>
           ))}
         </select>

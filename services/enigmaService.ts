@@ -22,16 +22,22 @@ export class EnigmaMachine {
   // Implements M3 Enigma stepping for 3 rotors.
   // This method is called *before* each character is processed.
   private stepRotors(): void {
-    if (this.rotors.length !== 3) {
-        if (this.rotors.length > 0) {
-             this.rotors[this.rotors.length - 1].step();
-        }
-        return;
+    let rL, rM, rR;
+    if (this.rotors.length === 4) {
+      rL = this.rotors[1]; // Left
+      rM = this.rotors[2]; // Middle
+      rR = this.rotors[3]; // Right
+      // this.rotors[0] (Beta/Gamma) does NOT step automatically.
+    } else if (this.rotors.length === 3) {
+      rL = this.rotors[0]; // Left
+      rM = this.rotors[1]; // Middle
+      rR = this.rotors[2]; // Right
+    } else {
+      if (this.rotors.length > 0) {
+        this.rotors[this.rotors.length - 1].step();
+      }
+      return;
     }
-
-    const rL = this.rotors[0]; // Leftmost
-    const rM = this.rotors[1]; // Middle
-    const rR = this.rotors[2]; // Rightmost
 
     const middleRotorAtNotch = rM.isAtNotch();
     const rightRotorAtNotch = rR.isAtNotch();

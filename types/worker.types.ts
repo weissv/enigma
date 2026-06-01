@@ -15,7 +15,20 @@ export type BombeWorkerMessage =
 
 // ─── Worker → Main Thread ─────────────────────────────────────────
 
+export interface TelemetryPayload {
+  readonly currentIteration: number;
+  readonly maxIterations: number;
+  readonly currentIoC: number;
+  readonly bestIoC: number;
+  readonly currentPlugboard: Record<string, string>;
+  readonly currentDecryptedText: string;
+}
+
 export type BombeWorkerResponse =
+  | {
+      readonly type: 'TELEMETRY';
+      readonly payload: TelemetryPayload;
+    }
   | {
       readonly type: 'PROGRESS';
       readonly tested: number;

@@ -9,44 +9,43 @@
 /* ── Design Tokens ───────────────────────────────────────────────── */
 :root {
   /* Base */
-  --bg-void:       #08080d;
-  --bg-panel:      #0f0f18;
-  --bg-surface:    #161625;
-  --bg-elevated:   #1e1e32;
-  --bg-input:      #12121e;
+  --bg-void:       #0a0b12; /* Deep Kuro-Tobi / Void */
+  --bg-panel:      #121420;
+  --bg-surface:    #181a29;
+  --bg-elevated:   #1f2235;
+  --bg-input:      #0f111a;
 
-  /* Borders */
-  --border-dim:    #252540;
-  --border-active: #00ff9c;
-  --border-hover:  #3a3a60;
+  /* Borders (Gold) */
+  --border-dim:    rgba(212, 175, 55, 0.2);
+  --border-active: #d4af37;
+  --border-hover:  rgba(212, 175, 55, 0.5);
 
   /* Text */
-  --text-primary:  #e0e0e8;
-  --text-secondary:#a0a0b8;
-  --text-muted:    #5a5a75;
-  --text-accent:   #00ff9c;
-  --text-warn:     #ffab00;
-  --text-error:    #ff4466;
+  --text-primary:  #e2e4eb;
+  --text-secondary:#9ca3af;
+  --text-muted:    #6b7280;
+  --text-accent:   #d4af37; /* Gold */
+  --text-warn:     #fbbf24;
+  --text-error:    #e34234; /* Cinnabar */
 
   /* Signal Path Colors */
-  --signal-input:     #ff6b6b;
-  --signal-forward:   #ffa726;
-  --signal-reflector: #c05bdb;
-  --signal-backward:  #42a5f5;
-  --signal-output:    #00e676;
+  --signal-input:     #e34234; /* Cinnabar */
+  --signal-forward:   #d4af37; /* Gold */
+  --signal-reflector: #3b82f6; /* Blue */
+  --signal-backward:  #0ea5e9; /* Light Blue */
+  --signal-output:    #10b981; /* Jade */
 
   /* Bombe Status */
-  --bombe-idle:    #5a5a75;
-  --bombe-running: #ffab00;
-  --bombe-success: #00e676;
-  --bombe-error:   #ff4466;
+  --bombe-idle:    #6b7280;
+  --bombe-running: #d4af37;
+  --bombe-success: #10b981;
+  --bombe-error:   #e34234;
 
   /* Accents */
-  --accent-cyan:   #00d4ff;
-  --accent-green:  #00ff9c;
-  --accent-purple: #a855f7;
-  --accent-amber:  #ffab00;
-  --accent-red:    #ff4466;
+  --accent-gold:   #d4af37;
+  --accent-cinnabar: #e34234;
+  --accent-jade:   #10b981;
+  --accent-cyan:   #06b6d4;
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -71,9 +70,10 @@
   --transition-slow: 350ms ease;
 
   /* Glow effects */
-  --glow-green: 0 0 12px rgba(0, 255, 156, 0.25);
-  --glow-cyan:  0 0 12px rgba(0, 212, 255, 0.25);
-  --glow-red:   0 0 12px rgba(255, 68, 102, 0.15);
+  --glow-gold:      0 0 12px rgba(212, 175, 55, 0.25);
+  --glow-gold-lg:   0 0 24px rgba(212, 175, 55, 0.4);
+  --glow-cinnabar:  0 0 12px rgba(227, 66, 52, 0.25);
+  --glow-jade:      0 0 12px rgba(16, 185, 129, 0.25);
 }
 
 /* ── Reset ───────────────────────────────────────────────────────── */
@@ -155,19 +155,32 @@ h1, h2, h3, h4 {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: minmax(300px, 350px) 1fr minmax(350px, 450px);
   grid-template-areas:
-    "controls   glassbox"
-    "io         cryptanalysis"
-    "bombe      bombe";
+    "archives archives      archives"
+    "controls glassbox      cryptanalysis"
+    "io       glassbox      cryptanalysis"
+    "bombe    bombe         bombe";
   gap: var(--gap-lg);
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "archives   archives"
+      "controls   glassbox"
+      "io         cryptanalysis"
+      "bombe      bombe";
+  }
 }
 
 @media (max-width: 900px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
     grid-template-areas:
+      "archives"
       "controls"
       "io"
       "glassbox"
@@ -176,23 +189,24 @@ h1, h2, h3, h4 {
   }
 }
 
+.area-archives      { grid-area: archives; }
 .area-controls      { grid-area: controls; }
-.area-glassbox       { grid-area: glassbox; }
-.area-io             { grid-area: io; }
-.area-cryptanalysis  { grid-area: cryptanalysis; }
-.area-bombe          { grid-area: bombe; }
+.area-glassbox      { grid-area: glassbox; position: sticky; top: 20px; }
+.area-io            { grid-area: io; }
+.area-cryptanalysis { grid-area: cryptanalysis; }
+.area-bombe         { grid-area: bombe; }
 
-/* ── Panel Component ─────────────────────────────────────────────── */
 .panel {
   background: var(--bg-panel);
   border: 1px solid var(--border-dim);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .panel--active {
   border-color: var(--border-active);
-  box-shadow: var(--glow-green);
+  box-shadow: var(--glow-gold-lg);
 }
 
 .panel__header {
@@ -329,23 +343,23 @@ h1, h2, h3, h4 {
 
 .btn--primary {
   background: transparent;
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
 }
 
 .btn--primary:hover {
-  background: rgba(0, 255, 156, 0.08);
-  box-shadow: var(--glow-green);
+  background: rgba(212, 175, 55, 0.08);
+  box-shadow: var(--glow-gold);
 }
 
 .btn--danger {
-  border-color: var(--accent-red);
-  color: var(--accent-red);
+  border-color: var(--accent-cinnabar);
+  color: var(--accent-cinnabar);
 }
 
 .btn--danger:hover {
-  background: rgba(255, 68, 102, 0.08);
-  box-shadow: var(--glow-red);
+  background: rgba(227, 66, 52, 0.08);
+  box-shadow: var(--glow-cinnabar);
 }
 
 .btn--sm {
@@ -518,10 +532,10 @@ h1, h2, h3, h4 {
 }
 
 .trace-char--selected {
-  border-color: var(--accent-green);
-  color: var(--accent-green);
-  background: rgba(0, 255, 156, 0.08);
-  box-shadow: var(--glow-green);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: rgba(212, 175, 55, 0.08);
+  box-shadow: var(--glow-gold);
 }
 
 /* ── Trace Step Detail ───────────────────────────────────────────── */
@@ -623,11 +637,11 @@ h1, h2, h3, h4 {
   font-weight: 700;
 }
 
-.ic-value--random       { color: var(--accent-red); }
-.ic-value--poly         { color: var(--accent-amber); }
-.ic-value--weak         { color: var(--accent-purple); }
+.ic-value--random       { color: var(--text-muted); }
+.ic-value--poly         { color: var(--accent-cinnabar); }
+.ic-value--weak         { color: var(--accent-gold); }
 .ic-value--mono         { color: var(--accent-cyan); }
-.ic-value--natural      { color: var(--accent-green); }
+.ic-value--natural      { color: var(--accent-jade); }
 
 .ic-meter {
   flex: 1;

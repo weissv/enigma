@@ -95,6 +95,9 @@ export interface BombeConfig {
 
   /** Maximum execution time (ms). Default: 30000. */
   readonly timeoutMs?: number;
+
+  /** Which machine model to attack. Default: 'M3' */
+  readonly machineType?: 'M3' | 'M4';
 }
 
 /**

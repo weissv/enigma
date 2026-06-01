@@ -270,11 +270,11 @@ h1, h2, h3, h4 {
   color: var(--text-primary);
   background: var(--bg-input);
   border: 1px solid var(--border-dim);
-  border-radius: var(--radius-sm);
-  padding: var(--gap-sm) var(--gap-md);
+  padding: var(--gap-sm) 8px;
   outline: none;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   width: 100%;
+  text-overflow: ellipsis;
 }
 
 .input:focus,
@@ -410,26 +410,20 @@ h1, h2, h3, h4 {
 /* ── Control Panel ───────────────────────────────────────────────── */
 .rotor-grid {
   display: flex;
-  gap: var(--gap-md);
+  gap: var(--gap-sm);
   justify-content: space-between;
 }
 
 .rotor-grid > * {
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
-}
-
-@media (max-width: 600px) {
-  .rotor-grid {
-    flex-direction: column;
-  }
 }
 
 .rotor-config {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-sm);
-  padding: var(--gap-md);
+  gap: var(--gap-xs);
+  padding: var(--gap-sm);
   background: var(--bg-surface);
   border: 1px solid var(--border-dim);
   border-radius: var(--radius-sm);

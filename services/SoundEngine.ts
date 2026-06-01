@@ -38,31 +38,21 @@ class SoundEngine {
     if (!this.enabled || !this.ctx) return;
     const time = this.ctx.currentTime;
     
-    // White noise burst
-    const bufferSize = this.ctx.sampleRate * 0.05; // 50ms
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
-    
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 1500; // slightly lower for a solid clack
-    filter.Q.value = 1.0;
+    // Use a short, sharp oscillator click instead of white noise for better compatibility/audibility
+    const osc = this.ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(800, time);
+    osc.frequency.exponentialRampToValueAtTime(100, time + 0.05);
     
     const gainNode = this.ctx.createGain();
     gainNode.gain.setValueAtTime(0.5, time);
     gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
     
-    noise.connect(filter);
-    filter.connect(gainNode);
+    osc.connect(gainNode);
     gainNode.connect(this.ctx.destination);
     
-    noise.start(time);
+    osc.start(time);
+    osc.stop(time + 0.05);
   }
 
   /**
@@ -81,9 +71,9 @@ class SoundEngine {
     osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
     
     const gainNode = this.ctx.createGain();
-    const peakVolume = isDoubleStep ? 0.9 : 0.4;
+    const peakVolume = isDoubleStep ? 1.0 : 0.6;
     gainNode.gain.setValueAtTime(peakVolume, time);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
     
     osc.connect(gainNode);
     gainNode.connect(this.ctx.destination);

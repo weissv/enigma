@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <filter id="glow-gold" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="#0a0b12" rx="112" />
+
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#d4af37" stroke-width="20" stroke-dasharray="40 20" filter="url(#glow-gold)" />
+  
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#1f2235" stroke-width="6" />
+
+  <g fill="#e2e4eb">
+    <rect x="176" y="152" width="40" height="208" />
+    <rect x="176" y="152" width="128" height="40" />
+    <rect x="176" y="236" width="96" height="40" />
+    <rect x="176" y="320" width="128" height="40" />
+  </g>
+
+  <path d="M 120 400 L 224 296 L 224 200 L 392 200" fill="none" stroke="#06b6d4" stroke-width="16" stroke-linejoin="miter" filter="url(#glow-cyan)" />
+
+  <circle cx="120" cy="400" r="16" fill="#e34234" />
+  
+  <circle cx="392" cy="200" r="16" fill="#10b981" />
+</svg>

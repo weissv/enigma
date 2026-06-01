@@ -10,6 +10,7 @@ import type { TelemetryPayload } from '../../types/worker.types';
 import { formatNumber } from '../../utils/formatting';
 import { BombeTelemetryView } from './BombeTelemetryView';
 import { CribGraph } from './CribGraph';
+import { useI18n } from '../../utils/i18n';
 
 interface BombePanelProps {
   ciphertext: string;
@@ -38,6 +39,7 @@ export const BombePanel: React.FC<BombePanelProps> = ({
   onCancel,
   onReset,
 }) => {
+  const { t } = useI18n();
   const [crib, setCrib] = useState('');
   const [cribPosition, setCribPosition] = useState(0);
   const isRunning = status === BombeStatus.RUNNING;
@@ -88,15 +90,15 @@ export const BombePanel: React.FC<BombePanelProps> = ({
               onClick={handleStart}
               disabled={!crib.trim() || !ciphertext.trim()}
             >
-              Run Bombe
+              {t('startSwarm')}
             </button>
           ) : (
             <button className="btn btn--danger" onClick={onCancel}>
-              Cancel
+              {t('cancelSwarm')}
             </button>
           )}
           <button className="btn btn--sm" onClick={onReset} disabled={isRunning}>
-            Reset
+            {t('resetSwarm')}
           </button>
         </div>
       </div>

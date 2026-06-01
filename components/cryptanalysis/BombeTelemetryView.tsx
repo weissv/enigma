@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { TelemetryPayload } from '../../types/worker.types';
 import { ALPHABET } from '../../constants';
 import { BombeStatus } from '../../types/cryptanalysis.types';
+import { useI18n } from '../../utils/i18n';
 
 interface BombeTelemetryViewProps {
   telemetry: TelemetryPayload | null;
@@ -9,6 +10,7 @@ interface BombeTelemetryViewProps {
 }
 
 export const BombeTelemetryView: React.FC<BombeTelemetryViewProps> = ({ telemetry, status }) => {
+  const { t } = useI18n();
   const [iocHistory, setIocHistory] = useState<{ x: number; current: number; best: number }[]>([]);
 
   useEffect(() => {
@@ -64,14 +66,14 @@ export const BombeTelemetryView: React.FC<BombeTelemetryViewProps> = ({ telemetr
         </div>
         <svg width="100%" height={GRAPH_HEIGHT} viewBox={`0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}`} preserveAspectRatio="none" style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-color)', display: 'block' }}>
           {/* Grid lines */}
-          <line x1="0" y1={mapY(0.06)} x2={GRAPH_WIDTH} y2={mapY(0.06)} stroke="var(--accent-green)" strokeWidth="1" strokeDasharray="4,4" opacity="0.3" />
-          <text x="5" y={mapY(0.06) - 5} fill="var(--accent-green)" fontSize="10" opacity="0.5" fontFamily="monospace">Target (0.060)</text>
+          <line x1="0" y1={mapY(0.06)} x2={GRAPH_WIDTH} y2={mapY(0.06)} stroke="var(--accent-jade)" strokeWidth="1" strokeDasharray="4,4" opacity="0.3" />
+          <text x="5" y={mapY(0.06) - 5} fill="var(--accent-jade)" fontSize="10" opacity="0.5" fontFamily="monospace">Target (0.060)</text>
           
           <line x1="0" y1={mapY(0.04)} x2={GRAPH_WIDTH} y2={mapY(0.04)} stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2,2" opacity="0.2" />
           <text x="5" y={mapY(0.04) - 5} fill="var(--text-muted)" fontSize="10" opacity="0.5" fontFamily="monospace">Random (0.038)</text>
 
-          <polyline points={currentPoints} fill="none" stroke="var(--accent-amber)" strokeWidth="1" opacity="0.4" />
-          <polyline points={bestPoints} fill="none" stroke="var(--accent-green)" strokeWidth="2" style={{ filter: 'drop-shadow(0 0 2px var(--accent-green))' }} />
+          <polyline points={currentPoints} fill="none" stroke="var(--accent-gold)" strokeWidth="1" opacity="0.4" />
+          <polyline points={bestPoints} fill="none" stroke="var(--accent-jade)" strokeWidth="2" style={{ filter: 'drop-shadow(0 0 2px var(--accent-jade))' }} />
         </svg>
       </div>
 
@@ -89,9 +91,9 @@ export const BombeTelemetryView: React.FC<BombeTelemetryViewProps> = ({ telemetr
                   textAlign: 'center', 
                   fontSize: '10px',
                   padding: '4px 0',
-                  background: isPlugged ? 'var(--accent-green)' : 'var(--surface-sunken)',
+                  background: isPlugged ? 'var(--accent-jade)' : 'var(--bg-input)',
                   color: isPlugged ? '#000' : 'var(--text-muted)',
-                  border: `1px solid ${isPlugged ? 'var(--accent-green)' : 'var(--border-color)'}`,
+                  border: `1px solid ${isPlugged ? 'var(--accent-jade)' : 'var(--border-dim)'}`,
                   transition: 'background 0.05s ease-out, color 0.05s ease-out',
                   fontFamily: 'monospace',
                   fontWeight: isPlugged ? 'bold' : 'normal',
@@ -110,7 +112,7 @@ export const BombeTelemetryView: React.FC<BombeTelemetryViewProps> = ({ telemetr
         <div className="text-xs text-muted mb-xs flex" style={{ justifyContent: 'space-between' }}>
           <span>Decryption Stream</span>
           {telemetry && (
-            <span style={{ color: telemetry.bestIoC > 0.060 ? 'var(--accent-green)' : 'var(--accent-amber)' }}>
+            <span style={{ color: telemetry.bestIoC > 0.060 ? 'var(--accent-jade)' : 'var(--accent-gold)' }}>
               Best IoC: {telemetry.bestIoC.toFixed(4)}
             </span>
           )}

@@ -6,16 +6,19 @@ import React from 'react';
 import type { BombeCandidate } from '../../types/cryptanalysis.types';
 import { indexToChar } from '../../constants';
 import { toPercent } from '../../utils/formatting';
+import { useI18n } from '../../utils/i18n';
 
 interface BombeResultsTableProps {
   candidates: BombeCandidate[];
 }
 
 export const BombeResultsTable: React.FC<BombeResultsTableProps> = ({ candidates }) => {
+  const { t } = useI18n();
+
   if (candidates.length === 0) {
     return (
       <div className="text-mono text-sm text-muted mt-md" style={{ textAlign: 'center', padding: 'var(--gap-md)' }}>
-        No candidates found yet
+        {t('noCandidates')}
       </div>
     );
   }
@@ -29,12 +32,12 @@ export const BombeResultsTable: React.FC<BombeResultsTableProps> = ({ candidates
         <thead>
           <tr>
             <th>#</th>
-            <th>Rotors</th>
-            <th>Positions</th>
-            <th>Reflector</th>
-            <th>Steckerbrett</th>
-            <th>Confidence</th>
-            <th>Preview</th>
+            <th>{t('tableRotor')}</th>
+            <th>{t('tablePos')}</th>
+            <th>{t('tableRef')}</th>
+            <th>{t('tableStecker')}</th>
+            <th>{t('tableScore')}</th>
+            <th>{t('tablePreview')}</th>
           </tr>
         </thead>
         <tbody>

@@ -59,3 +59,11 @@ export const INITIAL_M4_REFLECTOR: ReflectorName = 'B Thin';
 
 export const charToIndex = (char: string): number => char.toUpperCase().charCodeAt(0) - 65;
 export const indexToChar = (index: number): string => String.fromCharCode(index + 65);
+
+// Map string names to AS indices for WASM engine
+export const ROTOR_MAP: Record<string, number> = {
+  'I': 0, 'II': 1, 'III': 2, 'IV': 3, 'V': 4, 'Beta': 5, 'Gamma': 6
+};
+export const REFLECTOR_MAP: Record<string, number> = {
+  'B': 0, 'C': 1, 'B Thin': 2, 'C Thin': 3
+};

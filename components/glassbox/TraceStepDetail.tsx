@@ -13,6 +13,7 @@ interface TraceStepDetailProps {
 
 const STAGE_CSS: Record<TraceStage, string> = {
   [TraceStage.INPUT]:       'trace-step--input',
+  [TraceStage.PLUGBOARD_FWD]: 'trace-step--forward',
   [TraceStage.ROTOR_R_FWD]: 'trace-step--forward',
   [TraceStage.ROTOR_M_FWD]: 'trace-step--forward',
   [TraceStage.ROTOR_L_FWD]: 'trace-step--forward',
@@ -20,11 +21,13 @@ const STAGE_CSS: Record<TraceStage, string> = {
   [TraceStage.ROTOR_L_INV]: 'trace-step--backward',
   [TraceStage.ROTOR_M_INV]: 'trace-step--backward',
   [TraceStage.ROTOR_R_INV]: 'trace-step--backward',
+  [TraceStage.PLUGBOARD_INV]: 'trace-step--backward',
   [TraceStage.OUTPUT]:      'trace-step--output',
 };
 
 const STAGE_NAMES: Record<TraceStage, string> = {
   [TraceStage.INPUT]:       'Input',
+  [TraceStage.PLUGBOARD_FWD]: 'Steckerbrett',
   [TraceStage.ROTOR_R_FWD]: 'Rotor R',
   [TraceStage.ROTOR_M_FWD]: 'Rotor M',
   [TraceStage.ROTOR_L_FWD]: 'Rotor L',
@@ -32,6 +35,7 @@ const STAGE_NAMES: Record<TraceStage, string> = {
   [TraceStage.ROTOR_L_INV]: 'Rotor L⁻¹',
   [TraceStage.ROTOR_M_INV]: 'Rotor M⁻¹',
   [TraceStage.ROTOR_R_INV]: 'Rotor R⁻¹',
+  [TraceStage.PLUGBOARD_INV]: 'Steckerbrett',
   [TraceStage.OUTPUT]:      'Output',
 };
 
@@ -62,6 +66,11 @@ export const TraceStepDetail: React.FC<TraceStepDetailProps> = ({ trace }) => {
           {step.componentState.kind === 'reflector' && (
             <span className="text-mono text-xs text-muted mt-sm">
               UKW-{step.componentState.reflectorType}
+            </span>
+          )}
+          {step.componentState.kind === 'plugboard' && (
+            <span className="text-mono text-xs text-muted mt-sm">
+              PLUG
             </span>
           )}
         </div>

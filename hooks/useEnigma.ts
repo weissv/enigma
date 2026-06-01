@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { RotorSetting } from '../types/enigma.types';
+import { RotorSetting, PlugboardConfig } from '../types/enigma.types';
 import type { EnigmaConfig } from '../types/enigma.types';
 import type { MessageTrace } from '../types/trace.types';
 import { INITIAL_ROTOR_SETTINGS, INITIAL_REFLECTOR, ReflectorName } from '../constants';
@@ -17,6 +17,7 @@ export const useEnigma = () => {
   const [outputText, setOutputText] = useState<string>('');
   const [rotorSettings, setRotorSettings] = useState<RotorSetting[]>(INITIAL_ROTOR_SETTINGS);
   const [reflectorType, setReflectorType] = useState<ReflectorName>(INITIAL_REFLECTOR);
+  const [plugboardConfig, setPlugboardConfig] = useState<PlugboardConfig>({});
   const [messageTrace, setMessageTrace] = useState<MessageTrace | null>(null);
 
   const handleRotorSettingChange = useCallback((updatedRotorSetting: RotorSetting) => {
@@ -35,18 +36,19 @@ export const useEnigma = () => {
     const config: EnigmaConfig = {
       rotors: [...rotorSettings],
       reflector: reflectorType,
+      plugboard: { ...plugboardConfig },
     };
 
-    const machine = new EnigmaMachine([...rotorSettings], reflectorType);
+    const machine = new EnigmaMachine(config);
     const { result, trace } = machine.processStringTraced(inputText, config);
 
     setOutputText(result);
     setMessageTrace(trace);
-  }, [inputText, rotorSettings, reflectorType]);
+  }, [inputText, rotorSettings, reflectorType, plugboardConfig]);
 
   useEffect(() => {
     processText();
-  }, [inputText, rotorSettings, reflectorType, processText]);
+  }, [inputText, rotorSettings, reflectorType, plugboardConfig, processText]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value.toUpperCase());
@@ -55,6 +57,7 @@ export const useEnigma = () => {
   const resetSettings = () => {
     setRotorSettings(INITIAL_ROTOR_SETTINGS);
     setReflectorType(INITIAL_REFLECTOR);
+    setPlugboardConfig({});
     setInputText('');
     setOutputText('');
     setMessageTrace(null);
@@ -65,10 +68,12 @@ export const useEnigma = () => {
     outputText,
     rotorSettings,
     reflectorType,
+    plugboardConfig,
     messageTrace,
     handleInputChange,
     handleRotorSettingChange,
     setReflectorType,
+    setPlugboardConfig,
     resetSettings,
   };
 };

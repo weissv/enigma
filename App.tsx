@@ -44,10 +44,12 @@ const App: React.FC = () => {
     outputText,
     rotorSettings,
     reflectorType,
+    plugboardConfig,
     messageTrace,
     handleInputChange,
     handleRotorSettingChange,
     setReflectorType,
+    setPlugboardConfig,
     resetSettings,
   } = useEnigma();
 
@@ -91,8 +93,10 @@ const App: React.FC = () => {
           <ControlPanel
             rotorSettings={rotorSettings}
             reflectorType={reflectorType}
+            plugboardConfig={plugboardConfig}
             onRotorSettingChange={handleRotorSettingChange}
             onReflectorTypeChange={setReflectorType}
+            onPlugboardChange={setPlugboardConfig}
             onReset={resetSettings}
           />
         }

@@ -13,15 +13,17 @@ import type { EnigmaConfig } from './enigma.types';
  * Order matches the physical path of the electrical impulse.
  */
 export enum TraceStage {
-  INPUT       = 'INPUT',
-  ROTOR_R_FWD = 'ROTOR_R_FWD',
-  ROTOR_M_FWD = 'ROTOR_M_FWD',
-  ROTOR_L_FWD = 'ROTOR_L_FWD',
-  REFLECTOR   = 'REFLECTOR',
-  ROTOR_L_INV = 'ROTOR_L_INV',
-  ROTOR_M_INV = 'ROTOR_M_INV',
-  ROTOR_R_INV = 'ROTOR_R_INV',
-  OUTPUT      = 'OUTPUT',
+  INPUT         = 'INPUT',
+  PLUGBOARD_FWD = 'PLUGBOARD_FWD',
+  ROTOR_R_FWD   = 'ROTOR_R_FWD',
+  ROTOR_M_FWD   = 'ROTOR_M_FWD',
+  ROTOR_L_FWD   = 'ROTOR_L_FWD',
+  REFLECTOR     = 'REFLECTOR',
+  ROTOR_L_INV   = 'ROTOR_L_INV',
+  ROTOR_M_INV   = 'ROTOR_M_INV',
+  ROTOR_R_INV   = 'ROTOR_R_INV',
+  PLUGBOARD_INV = 'PLUGBOARD_INV',
+  OUTPUT        = 'OUTPUT',
 }
 
 /**
@@ -40,7 +42,11 @@ export interface ReflectorComponentState {
   readonly reflectorType: ReflectorName;
 }
 
-export type ComponentState = RotorComponentState | ReflectorComponentState;
+export interface PlugboardComponentState {
+  readonly kind: 'plugboard';
+}
+
+export type ComponentState = RotorComponentState | ReflectorComponentState | PlugboardComponentState;
 
 /**
  * A single transformation step within the signal path.
@@ -69,6 +75,7 @@ export interface IdentityComponentState {
 export type ExtendedComponentState =
   | RotorComponentState
   | ReflectorComponentState
+  | PlugboardComponentState
   | IdentityComponentState;
 
 /**
@@ -85,7 +92,7 @@ export interface ExtendedTraceStep {
 
 /**
  * Full trace for one character.
- * Contains exactly 9 steps: INPUT → 7 transformations → OUTPUT.
+ * Contains exactly 11 steps: INPUT → Plugboard FWD → 7 transformations → Plugboard INV → OUTPUT.
  */
 export interface SignalTrace {
   /** Character index in the message (0-based) */

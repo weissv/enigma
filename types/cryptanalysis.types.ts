@@ -90,6 +90,9 @@ export interface BombeConfig {
   /** Reflectors to try. Default: ['B', 'C']. */
   readonly reflectorCandidates?: readonly ReflectorName[];
 
+  /** Ring settings to try (0-25). Default: [0]. Note: Brute-forcing all 26^3 rings is extremely slow. */
+  readonly ringCandidates?: readonly number[];
+
   /** Maximum execution time (ms). Default: 30000. */
   readonly timeoutMs?: number;
 }
@@ -100,8 +103,9 @@ export interface BombeConfig {
 export interface BombeCandidate {
   readonly rotorTypes: readonly RotorName[];
   readonly rotorPositions: readonly number[];   // [L, M, R] initial positions
-  readonly ringSettings: readonly number[];     // [L, M, R] — fixed (0,0,0) in MVP
+  readonly ringSettings: readonly number[];     // [L, M, R]
   readonly reflectorType: ReflectorName;
+  readonly plugboard: Record<string, string>;   // Found steckerbrett pairs
 
   /** Decrypted text preview using this configuration */
   readonly decryptedPreview: string;

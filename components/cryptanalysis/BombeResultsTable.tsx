@@ -32,6 +32,7 @@ export const BombeResultsTable: React.FC<BombeResultsTableProps> = ({ candidates
             <th>Rotors</th>
             <th>Positions</th>
             <th>Reflector</th>
+            <th>Steckerbrett</th>
             <th>Confidence</th>
             <th>Preview</th>
           </tr>
@@ -53,6 +54,9 @@ export const BombeResultsTable: React.FC<BombeResultsTableProps> = ({ candidates
                   <span className="text-muted"> ({c.rotorPositions.join(',')})</span>
                 </td>
                 <td>{c.reflectorType}</td>
+                <td style={{ fontSize: '0.75rem', maxWidth: '100px', whiteSpace: 'normal', wordWrap: 'break-word' }}>
+                  {Object.entries(c.plugboard).map(([a, b]) => `${a}${b}`).join(' ')}
+                </td>
                 <td>
                   <span className="results-table__score">
                     <span

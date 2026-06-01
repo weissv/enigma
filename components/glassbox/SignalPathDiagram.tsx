@@ -16,6 +16,7 @@ interface SignalPathDiagramProps {
 
 const STAGE_LABELS: Record<TraceStage, string> = {
   [TraceStage.INPUT]:       'IN',
+  [TraceStage.PLUGBOARD_FWD]: 'PLUG',
   [TraceStage.ROTOR_R_FWD]: 'R →',
   [TraceStage.ROTOR_M_FWD]: 'M →',
   [TraceStage.ROTOR_L_FWD]: 'L →',
@@ -23,11 +24,13 @@ const STAGE_LABELS: Record<TraceStage, string> = {
   [TraceStage.ROTOR_L_INV]: '← L',
   [TraceStage.ROTOR_M_INV]: '← M',
   [TraceStage.ROTOR_R_INV]: '← R',
+  [TraceStage.PLUGBOARD_INV]: 'PLUG',
   [TraceStage.OUTPUT]:      'OUT',
 };
 
 const STAGE_COLORS: Record<TraceStage, string> = {
   [TraceStage.INPUT]:       'var(--signal-input)',
+  [TraceStage.PLUGBOARD_FWD]: 'var(--signal-forward)',
   [TraceStage.ROTOR_R_FWD]: 'var(--signal-forward)',
   [TraceStage.ROTOR_M_FWD]: 'var(--signal-forward)',
   [TraceStage.ROTOR_L_FWD]: 'var(--signal-forward)',
@@ -35,11 +38,12 @@ const STAGE_COLORS: Record<TraceStage, string> = {
   [TraceStage.ROTOR_L_INV]: 'var(--signal-backward)',
   [TraceStage.ROTOR_M_INV]: 'var(--signal-backward)',
   [TraceStage.ROTOR_R_INV]: 'var(--signal-backward)',
+  [TraceStage.PLUGBOARD_INV]: 'var(--signal-backward)',
   [TraceStage.OUTPUT]:      'var(--signal-output)',
 };
 
-const NODE_X_POSITIONS = [30, 85, 140, 195, 260, 325, 380, 435, 500];
-const SVG_WIDTH = 540;
+const NODE_X_POSITIONS = [30, 89, 148, 207, 266, 325, 384, 443, 502, 561, 620];
+const SVG_WIDTH = 650;
 const SVG_HEIGHT = 120;
 const NODE_Y = 50;
 const NODE_R = 18;
@@ -142,16 +146,16 @@ export const SignalPathDiagram: React.FC<SignalPathDiagramProps> = ({ trace }) =
 
         {/* Reflector separator line */}
         <line
-          x1={228} y1={NODE_Y - 30}
-          x2={228} y2={NODE_Y + 30}
+          x1={295} y1={NODE_Y - 30}
+          x2={295} y2={NODE_Y + 30}
           stroke="var(--signal-reflector)"
           strokeWidth={0.5}
           strokeDasharray="3,3"
           opacity={0.3}
         />
         <line
-          x1={292} y1={NODE_Y - 30}
-          x2={292} y2={NODE_Y + 30}
+          x1={355} y1={NODE_Y - 30}
+          x2={355} y2={NODE_Y + 30}
           stroke="var(--signal-reflector)"
           strokeWidth={0.5}
           strokeDasharray="3,3"

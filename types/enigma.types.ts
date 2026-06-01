@@ -12,8 +12,10 @@ export interface RotorSetting {
   ringSetting: number;      // 0-25, for 'A' through 'Z'
 }
 
+export type PlugboardConfig = Record<string, string>;
+
 export interface EnigmaConfig {
   rotors: RotorSetting[];
   reflector: ReflectorName;
-  // plugboard?: PlugboardConfig; // Phase 2
+  plugboard: PlugboardConfig;
 }

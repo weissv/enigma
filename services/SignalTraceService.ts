@@ -20,6 +20,7 @@ import {
 } from '../types/trace.types';
 import { Rotor } from './Rotor';
 import { Reflector } from './Reflector';
+import { Plugboard } from './Plugboard';
 
 export class SignalTraceService {
 
@@ -31,13 +32,15 @@ export class SignalTraceService {
    * @param charIndex - Position in the message (0-indexed)
    * @param rotors    - Rotor instances AFTER stepping (order: [L, M, R])
    * @param reflector - Reflector instance
-   * @returns SignalTrace with 9 steps, or null for non-alphabetic characters
+   * @param plugboard - Plugboard instance
+   * @returns SignalTrace with 11 steps, or null for non-alphabetic characters
    */
   public traceCharacter(
     char: string,
     charIndex: number,
     rotors: Rotor[],
     reflector: Reflector,
+    plugboard: Plugboard,
   ): SignalTrace | null {
     const charUpper = char.toUpperCase();
     if (ALPHABET.indexOf(charUpper) === -1) return null;
@@ -58,7 +61,19 @@ export class SignalTraceService {
       componentState: { kind: 'identity' },
     });
 
-    // ── Steps 1-3: Forward pass (Right → Middle → Left) ─────
+    // ── Step 1: Plugboard Forward ────────────────────────────
+    const signalAfterPlugFwd = plugboard.process(signal);
+    steps.push({
+      stage: TraceStage.PLUGBOARD_FWD,
+      signalIn: signal,
+      signalOut: signalAfterPlugFwd,
+      charIn: indexToChar(signal),
+      charOut: indexToChar(signalAfterPlugFwd),
+      componentState: { kind: 'plugboard' },
+    });
+    signal = signalAfterPlugFwd;
+
+    // ── Steps 2-4: Forward pass (Right → Middle → Left) ─────
     const forwardStages = [
       TraceStage.ROTOR_R_FWD,
       TraceStage.ROTOR_M_FWD,
@@ -115,7 +130,19 @@ export class SignalTraceService {
       });
     }
 
-    // ── Step 8: OUTPUT ───────────────────────────────────────
+    // ── Step 9: Plugboard Inverse ────────────────────────────
+    const signalAfterPlugInv = plugboard.process(signal);
+    steps.push({
+      stage: TraceStage.PLUGBOARD_INV,
+      signalIn: signal,
+      signalOut: signalAfterPlugInv,
+      charIn: indexToChar(signal),
+      charOut: indexToChar(signalAfterPlugInv),
+      componentState: { kind: 'plugboard' },
+    });
+    signal = signalAfterPlugInv;
+
+    // ── Step 10: OUTPUT ───────────────────────────────────────
     const outputChar = indexToChar(signal);
     steps.push({
       stage: TraceStage.OUTPUT,
@@ -142,6 +169,7 @@ export class SignalTraceService {
   public traceMessage(text: string, config: EnigmaConfig): MessageTrace {
     const rotors = config.rotors.map(rs => new Rotor(rs));
     const reflector = new Reflector(config.reflector);
+    const plugboard = new Plugboard(config.plugboard);
     const traces: SignalTrace[] = [];
 
     let charIndex = 0;
@@ -152,7 +180,7 @@ export class SignalTraceService {
       // Perform stepping (same logic as EnigmaMachine.stepRotors)
       this.stepRotors(rotors);
 
-      const trace = this.traceCharacter(charUpper, charIndex, rotors, reflector);
+      const trace = this.traceCharacter(charUpper, charIndex, rotors, reflector, plugboard);
       if (trace) {
         traces.push(trace);
         charIndex++;

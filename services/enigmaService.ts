@@ -1,20 +1,21 @@
-
-import { ALPHABET, charToIndex, indexToChar, ReflectorName } from '../constants';
-import { RotorSetting } from '../types/enigma.types';
+import { ALPHABET, charToIndex, indexToChar } from '../constants';
 import type { EnigmaConfig } from '../types/enigma.types';
 import type { SignalTrace, MessageTrace } from '../types/trace.types';
 import { Rotor } from './Rotor';
 import { Reflector } from './Reflector';
+import { Plugboard } from './Plugboard';
 import { SignalTraceService } from './SignalTraceService';
 
 export class EnigmaMachine {
   private rotors: Rotor[]; // Order: [Leftmost, Middle, Rightmost] for a 3-rotor setup
   private reflector: Reflector;
+  private plugboard: Plugboard;
   private traceService: SignalTraceService;
 
-  constructor(rotorSettings: RotorSetting[], reflectorType: ReflectorName) {
-    this.rotors = rotorSettings.map(rs => new Rotor(rs));
-    this.reflector = new Reflector(reflectorType);
+  constructor(config: EnigmaConfig) {
+    this.rotors = config.rotors.map(rs => new Rotor(rs));
+    this.reflector = new Reflector(config.reflector);
+    this.plugboard = new Plugboard(config.plugboard);
     this.traceService = new SignalTraceService();
   }
 
@@ -54,6 +55,9 @@ export class EnigmaMachine {
 
     let signal = charToIndex(charUpper);
 
+    // Plugboard (Forward)
+    signal = this.plugboard.process(signal);
+
     // Forward pass: Rightmost rotor through Leftmost rotor
     for (let i = this.rotors.length - 1; i >= 0; i--) {
       signal = this.rotors[i].forward(signal);
@@ -66,6 +70,9 @@ export class EnigmaMachine {
     for (let i = 0; i < this.rotors.length; i++) {
       signal = this.rotors[i].backward(signal);
     }
+
+    // Plugboard (Inverse/Backward)
+    signal = this.plugboard.process(signal);
 
     return indexToChar(signal);
   }
@@ -89,6 +96,7 @@ export class EnigmaMachine {
       charIndex,
       this.rotors,
       this.reflector,
+      this.plugboard
     );
   }
 
@@ -141,5 +149,10 @@ export class EnigmaMachine {
   /** Exposes reflector instance for external inspection (read-only intent). */
   public getReflector(): Reflector {
     return this.reflector;
+  }
+
+  /** Exposes plugboard instance for external inspection (read-only intent). */
+  public getPlugboard(): Plugboard {
+    return this.plugboard;
   }
 }

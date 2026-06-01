@@ -1,10 +1,17 @@
+/**
+ * Header — Cyberpunk Noir platform header.
+ */
+
 import React from 'react';
 
-export const Header: React.FC = () => {
-  return (
-    <header className="mb-8 text-center">
-      <h1 className="text-4xl font-bold text-cyan-400 tracking-wider">Enigma Simulator</h1>
-      <p className="text-slate-400 mt-2">Configure rotors and reflector to encrypt/decrypt messages.</p>
-    </header>
-  );
-};
+export const Header: React.FC = () => (
+  <header className="app-header">
+    <div>
+      <h1 className="app-header__title">Enigma // Cryptanalysis Platform</h1>
+      <p className="app-header__subtitle">M3 Wehrmacht · Mechanistic Interpretability · Turing Bombe</p>
+    </div>
+    <div className="text-mono text-xs text-muted">
+      v2.0 · Research Build
+    </div>
+  </header>
+);

@@ -1,5 +1,14 @@
+/**
+ * useEnigma — Core hook for Enigma machine state management.
+ *
+ * Refactored to produce MessageTrace alongside encryption output,
+ * enabling the Glass Box visualization module.
+ */
+
 import { useState, useCallback, useEffect } from 'react';
-import { RotorSetting } from '../types';
+import { RotorSetting } from '../types/enigma.types';
+import type { EnigmaConfig } from '../types/enigma.types';
+import type { MessageTrace } from '../types/trace.types';
 import { INITIAL_ROTOR_SETTINGS, INITIAL_REFLECTOR, ReflectorName } from '../constants';
 import { EnigmaMachine } from '../services/enigmaService';
 
@@ -8,6 +17,7 @@ export const useEnigma = () => {
   const [outputText, setOutputText] = useState<string>('');
   const [rotorSettings, setRotorSettings] = useState<RotorSetting[]>(INITIAL_ROTOR_SETTINGS);
   const [reflectorType, setReflectorType] = useState<ReflectorName>(INITIAL_REFLECTOR);
+  const [messageTrace, setMessageTrace] = useState<MessageTrace | null>(null);
 
   const handleRotorSettingChange = useCallback((updatedRotorSetting: RotorSetting) => {
     setRotorSettings(prevSettings =>
@@ -18,11 +28,20 @@ export const useEnigma = () => {
   const processText = useCallback(() => {
     if (!inputText.trim()) {
       setOutputText('');
+      setMessageTrace(null);
       return;
     }
+
+    const config: EnigmaConfig = {
+      rotors: [...rotorSettings],
+      reflector: reflectorType,
+    };
+
     const machine = new EnigmaMachine([...rotorSettings], reflectorType);
-    const processed = machine.processString(inputText);
-    setOutputText(processed);
+    const { result, trace } = machine.processStringTraced(inputText, config);
+
+    setOutputText(result);
+    setMessageTrace(trace);
   }, [inputText, rotorSettings, reflectorType]);
 
   useEffect(() => {
@@ -38,6 +57,7 @@ export const useEnigma = () => {
     setReflectorType(INITIAL_REFLECTOR);
     setInputText('');
     setOutputText('');
+    setMessageTrace(null);
   };
 
   return {
@@ -45,9 +65,10 @@ export const useEnigma = () => {
     outputText,
     rotorSettings,
     reflectorType,
+    messageTrace,
     handleInputChange,
     handleRotorSettingChange,
     setReflectorType,
-    resetSettings
+    resetSettings,
   };
 };

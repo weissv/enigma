@@ -1,3 +1,8 @@
+/**
+ * IOArea — Input/Output text areas.
+ * Migrated from Tailwind to vanilla CSS design system.
+ */
+
 import React from 'react';
 
 interface IOAreaProps {
@@ -8,27 +13,27 @@ interface IOAreaProps {
 
 export const IOArea: React.FC<IOAreaProps> = ({ inputText, outputText, onInputChange }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label htmlFor="input-text" className="block text-lg font-semibold text-slate-300 mb-2">Input Text</label>
+    <div className="io-grid">
+      <div className="io-column">
+        <label htmlFor="input-text" className="label">Plaintext Input</label>
         <textarea
           id="input-text"
-          rows={8}
+          rows={6}
           value={inputText}
           onChange={onInputChange}
-          placeholder="Type your message here (A-Z)..."
-          className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-slate-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 font-mono text-lg"
+          placeholder="TYPE YOUR MESSAGE HERE (A-Z)..."
+          className="textarea"
         />
       </div>
-      <div>
-        <label htmlFor="output-text" className="block text-lg font-semibold text-slate-300 mb-2">Output Text</label>
+      <div className="io-column">
+        <label htmlFor="output-text" className="label">Ciphertext Output</label>
         <textarea
           id="output-text"
-          rows={8}
+          rows={6}
           value={outputText}
           readOnly
-          placeholder="Processed text will appear here..."
-          className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-slate-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 font-mono text-lg cursor-not-allowed"
+          placeholder="ENCRYPTED OUTPUT APPEARS HERE..."
+          className="textarea textarea--readonly"
         />
       </div>
     </div>

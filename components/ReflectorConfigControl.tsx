@@ -1,3 +1,7 @@
+/**
+ * ReflectorConfigControl — Reflector type selection.
+ * Migrated from Tailwind to vanilla CSS design system.
+ */
 
 import React from 'react';
 import { AVAILABLE_REFLECTORS_LIST, ReflectorName } from '../constants';
@@ -7,29 +11,23 @@ interface ReflectorConfigControlProps {
   onReflectorTypeChange: (newReflector: ReflectorName) => void;
 }
 
-const ReflectorConfigControl: React.FC<ReflectorConfigControlProps> = ({ reflectorType, onReflectorTypeChange }) => {
-  const handleReflectorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onReflectorTypeChange(e.target.value as ReflectorName);
-  };
-
+const ReflectorConfigControl: React.FC<ReflectorConfigControlProps> = ({
+  reflectorType,
+  onReflectorTypeChange,
+}) => {
   return (
-    <div className="p-4 bg-gray-800 rounded-lg shadow border border-gray-700">
-      <h3 className="text-md font-semibold text-cyan-400 mb-2">Reflector</h3>
-      <div>
-        <label htmlFor="reflector-type" className="block text-sm font-medium text-slate-300 mb-1">Type</label>
-        <select
-          id="reflector-type"
-          value={reflectorType}
-          onChange={handleReflectorChange}
-          className="block w-full p-2.5 bg-gray-700 border border-gray-600 placeholder-gray-400 text-white focus:ring-cyan-500 focus:border-cyan-500 rounded-md shadow-sm appearance-none"
-        >
-          {AVAILABLE_REFLECTORS_LIST.map((refName) => (
-            <option key={refName} value={refName}>
-              Reflector {refName}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="flex items-center gap-md" style={{ flex: 1 }}>
+      <label className="label" style={{ marginBottom: 0, whiteSpace: 'nowrap' }}>Reflector (UKW)</label>
+      <select
+        className="select"
+        value={reflectorType}
+        onChange={(e) => onReflectorTypeChange(e.target.value as ReflectorName)}
+        style={{ maxWidth: '120px' }}
+      >
+        {AVAILABLE_REFLECTORS_LIST.map(r => (
+          <option key={r} value={r}>UKW-{r}</option>
+        ))}
+      </select>
     </div>
   );
 };

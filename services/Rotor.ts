@@ -1,5 +1,5 @@
 import { ALPHABET, charToIndex, indexToChar, RotorName, ROTOR_WIRINGS, ROTOR_NOTCHES } from '../constants';
-import { RotorSetting } from '../types';
+import { RotorSetting } from '../types/enigma.types';
 
 export class Rotor {
   public type: RotorName;

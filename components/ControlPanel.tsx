@@ -1,40 +1,53 @@
+/**
+ * ControlPanel — Machine configuration panel.
+ * Migrated from Tailwind to vanilla CSS design system.
+ */
+
 import React from 'react';
-import { RotorSetting } from '../types';
+import { RotorSetting } from '../types/enigma.types';
 import { ReflectorName } from '../constants';
 import RotorConfigControl from './RotorConfigControl';
 import ReflectorConfigControl from './ReflectorConfigControl';
+import { Panel } from './shared/Panel';
 
 interface ControlPanelProps {
   rotorSettings: RotorSetting[];
   reflectorType: ReflectorName;
   onRotorSettingChange: (updatedRotorSetting: RotorSetting) => void;
   onReflectorTypeChange: (newReflector: ReflectorName) => void;
+  onReset: () => void;
 }
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
   rotorSettings,
   reflectorType,
   onRotorSettingChange,
-  onReflectorTypeChange
+  onReflectorTypeChange,
+  onReset,
 }) => {
-  const rotorLabels = ["Slot 1 (Leftmost)", "Slot 2 (Middle)", "Slot 3 (Rightmost)"];
+  const rotorLabels = ['Left (L)', 'Middle (M)', 'Right (R)'];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 items-start">
-      {rotorSettings.map((setting, index) => (
-        <RotorConfigControl
-          key={setting.id}
-          rotorSetting={setting}
-          onRotorSettingChange={onRotorSettingChange}
-          rotorLabel={rotorLabels[index]}
-        />
-      ))}
-      <div className="md:col-span-3">
+    <Panel title="Machine Configuration">
+      <div className="rotor-grid">
+        {rotorSettings.map((setting, index) => (
+          <RotorConfigControl
+            key={setting.id}
+            rotorSetting={setting}
+            onRotorSettingChange={onRotorSettingChange}
+            rotorLabel={rotorLabels[index]}
+          />
+        ))}
+      </div>
+      <div className="reflector-config">
         <ReflectorConfigControl
           reflectorType={reflectorType}
           onReflectorTypeChange={onReflectorTypeChange}
         />
+        <button className="btn btn--danger btn--sm" onClick={onReset}>
+          Reset All
+        </button>
       </div>
-    </div>
+    </Panel>
   );
 };

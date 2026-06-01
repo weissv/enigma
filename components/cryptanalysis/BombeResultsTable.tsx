@@ -1,0 +1,78 @@
+/**
+ * BombeResultsTable — Displays found Bombe candidates in a data table.
+ */
+
+import React from 'react';
+import type { BombeCandidate } from '../../types/cryptanalysis.types';
+import { indexToChar } from '../../constants';
+import { toPercent } from '../../utils/formatting';
+
+interface BombeResultsTableProps {
+  candidates: BombeCandidate[];
+}
+
+export const BombeResultsTable: React.FC<BombeResultsTableProps> = ({ candidates }) => {
+  if (candidates.length === 0) {
+    return (
+      <div className="text-mono text-sm text-muted mt-md" style={{ textAlign: 'center', padding: 'var(--gap-md)' }}>
+        No candidates found yet
+      </div>
+    );
+  }
+
+  // Sort by confidence descending
+  const sorted = [...candidates].sort((a, b) => b.confidenceScore - a.confidenceScore);
+
+  return (
+    <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+      <table className="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Rotors</th>
+            <th>Positions</th>
+            <th>Reflector</th>
+            <th>Confidence</th>
+            <th>Preview</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((c, i) => {
+            const scoreColor = c.confidenceScore > 0.7
+              ? 'var(--accent-green)'
+              : c.confidenceScore > 0.4
+                ? 'var(--accent-amber)'
+                : 'var(--accent-red)';
+
+            return (
+              <tr key={i}>
+                <td style={{ color: 'var(--text-muted)' }}>{i + 1}</td>
+                <td>{c.rotorTypes.join('-')}</td>
+                <td>
+                  {c.rotorPositions.map(p => indexToChar(p)).join('-')}
+                  <span className="text-muted"> ({c.rotorPositions.join(',')})</span>
+                </td>
+                <td>{c.reflectorType}</td>
+                <td>
+                  <span className="results-table__score">
+                    <span
+                      className="results-table__score-fill"
+                      style={{
+                        width: `${c.confidenceScore * 100}%`,
+                        background: scoreColor,
+                      }}
+                    />
+                  </span>
+                  {toPercent(c.confidenceScore, 0)}
+                </td>
+                <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {c.decryptedPreview}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};

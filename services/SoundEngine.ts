@@ -34,51 +34,63 @@ class SoundEngine {
   /**
    * High-frequency metallic click for key presses.
    */
+  /**
+   * Helper to create a burst of white noise
+   */
+  private createNoiseBuffer(durationMs: number): AudioBuffer | null {
+    if (!this.ctx) return null;
+    const frameCount = Math.floor(this.ctx.sampleRate * (durationMs / 1000));
+    const buffer = this.ctx.createBuffer(1, frameCount, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < frameCount; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    return buffer;
+  }
+
   public playKeyClick() {
     if (!this.enabled || !this.ctx) return;
     const time = this.ctx.currentTime;
     
-    // 1. Mechanical "Clack"
-    // We use a short burst of noise for the physical impact
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.05); // 50ms
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
+    // 100% Mechanical Key Click (No oscillators, only shaped noise)
+    const buffer = this.createNoiseBuffer(40); // 40ms
+    if (!buffer) return;
+    
     const noise = this.ctx.createBufferSource();
     noise.buffer = buffer;
     
-    // Bandpass to focus on the 'clack' frequencies
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(2000, time);
-    filter.Q.value = 1.0;
+    // Split noise into two paths to simulate complex mechanical resonance
     
-    const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(1.5, time); // Loud impact
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+    // Path A: High-pitched plastic/metal snap
+    const filterHigh = this.ctx.createBiquadFilter();
+    filterHigh.type = 'bandpass';
+    filterHigh.frequency.setValueAtTime(4500, time);
+    filterHigh.Q.value = 1.5;
     
-    noise.connect(filter);
-    filter.connect(noiseGain);
-    noiseGain.connect(this.ctx.destination);
+    const gainHigh = this.ctx.createGain();
+    gainHigh.gain.setValueAtTime(1.5, time);
+    gainHigh.gain.exponentialRampToValueAtTime(0.01, time + 0.015); // extremely sharp
     
-    // 2. Body thud
-    // Use a square wave so it has harmonics and is audible on laptop speakers
-    const osc = this.ctx.createOscillator();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(250, time);
+    // Path B: Mid-range body clack
+    const filterMid = this.ctx.createBiquadFilter();
+    filterMid.type = 'bandpass';
+    filterMid.frequency.setValueAtTime(1200, time);
+    filterMid.Q.value = 2.0;
     
-    const oscGain = this.ctx.createGain();
-    oscGain.gain.setValueAtTime(0.4, time);
-    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+    const gainMid = this.ctx.createGain();
+    gainMid.gain.setValueAtTime(1.0, time);
+    gainMid.gain.exponentialRampToValueAtTime(0.01, time + 0.03); // slightly longer body resonance
     
-    osc.connect(oscGain);
-    oscGain.connect(this.ctx.destination);
+    // Routing
+    noise.connect(filterHigh);
+    filterHigh.connect(gainHigh);
+    gainHigh.connect(this.ctx.destination);
+    
+    noise.connect(filterMid);
+    filterMid.connect(gainMid);
+    gainMid.connect(this.ctx.destination);
     
     noise.start(time);
-    osc.start(time);
-    osc.stop(time + 0.05);
   }
 
   /**
@@ -88,64 +100,59 @@ class SoundEngine {
     if (!this.enabled || !this.ctx) return;
     const time = this.ctx.currentTime;
     
-    // 1. Sliding Metal Friction
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.12); // 120ms
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
+    // 100% Mechanical Rotor Step (No oscillators)
+    const duration = isDoubleStep ? 120 : 90;
+    const buffer = this.createNoiseBuffer(duration);
+    if (!buffer) return;
+    
     const noise = this.ctx.createBufferSource();
     noise.buffer = buffer;
     
-    const noiseFilter = this.ctx.createBiquadFilter();
-    noiseFilter.type = 'lowpass';
-    noiseFilter.frequency.setValueAtTime(1500, time); // More high end for metal grind
+    // Path A: Heavy low-end thud (replacing the sine wave)
+    const filterLow = this.ctx.createBiquadFilter();
+    filterLow.type = 'lowpass';
+    filterLow.frequency.setValueAtTime(250, time);
     
-    const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.8, time);
-    noiseGain.gain.linearRampToValueAtTime(0.01, time + 0.12);
+    const gainLow = this.ctx.createGain();
+    const peakLow = isDoubleStep ? 3.0 : 2.0; // Boosted gain for heavy impact
+    gainLow.gain.setValueAtTime(peakLow, time);
+    gainLow.gain.exponentialRampToValueAtTime(0.01, time + (duration / 1000));
     
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(this.ctx.destination);
+    // Path B: Metallic grind/sliding friction
+    const filterGrind = this.ctx.createBiquadFilter();
+    filterGrind.type = 'bandpass';
+    filterGrind.frequency.setValueAtTime(1800, time);
+    filterGrind.Q.value = 1.0;
     
-    // 2. Heavy Rotor "Chunk"
-    // Using square wave to guarantee it cuts through small speakers
-    const osc = this.ctx.createOscillator();
-    osc.type = 'square';
+    const gainGrind = this.ctx.createGain();
+    gainGrind.gain.setValueAtTime(1.5, time);
+    gainGrind.gain.linearRampToValueAtTime(0.01, time + (duration / 1000) * 0.8);
     
-    const freq = isDoubleStep ? 80 : 120;
-    osc.frequency.setValueAtTime(freq, time);
+    // Path C: The sharp metallic click of the latch locking
+    const filterLatch = this.ctx.createBiquadFilter();
+    filterLatch.type = 'highpass';
+    filterLatch.frequency.setValueAtTime(4000, time);
     
-    const oscGain = this.ctx.createGain();
-    const peakVolume = isDoubleStep ? 1.5 : 1.0;
+    const gainLatch = this.ctx.createGain();
+    gainLatch.gain.setValueAtTime(0.001, time);
+    // Delay the latch click slightly to simulate the end of the mechanical movement
+    gainLatch.gain.setValueAtTime(1.2, time + 0.02);
+    gainLatch.gain.exponentialRampToValueAtTime(0.01, time + 0.04);
     
-    oscGain.gain.setValueAtTime(0.001, time);
-    oscGain.gain.linearRampToValueAtTime(peakVolume, time + 0.02);
-    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15); // Longer decay so it feels heavy
+    // Routing
+    noise.connect(filterLow);
+    filterLow.connect(gainLow);
+    gainLow.connect(this.ctx.destination);
     
-    // Optional second harmonic to add metallic clank
-    const osc2 = this.ctx.createOscillator();
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(freq * 3.5, time);
+    noise.connect(filterGrind);
+    filterGrind.connect(gainGrind);
+    gainGrind.connect(this.ctx.destination);
     
-    const osc2Gain = this.ctx.createGain();
-    osc2Gain.gain.setValueAtTime(peakVolume * 0.5, time);
-    osc2Gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
-    
-    osc.connect(oscGain);
-    oscGain.connect(this.ctx.destination);
-    
-    osc2.connect(osc2Gain);
-    osc2Gain.connect(this.ctx.destination);
+    noise.connect(filterLatch);
+    filterLatch.connect(gainLatch);
+    gainLatch.connect(this.ctx.destination);
     
     noise.start(time);
-    osc.start(time);
-    osc2.start(time);
-    
-    osc.stop(time + 0.15);
-    osc2.stop(time + 0.1);
   }
 }
 

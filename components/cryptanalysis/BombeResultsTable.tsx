@@ -27,7 +27,7 @@ export const BombeResultsTable: React.FC<BombeResultsTableProps> = ({ candidates
   const sorted = [...candidates].sort((a, b) => b.confidenceScore - a.confidenceScore);
 
   return (
-    <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+    <div className="overflow-x-auto" style={{ maxHeight: '300px', overflowY: 'auto', width: '100%' }}>
       <table className="results-table">
         <thead>
           <tr>

@@ -57,7 +57,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           </button>
         </div>
       </div>
-      <div className="rotor-grid" style={{ gridTemplateColumns: `repeat(${rotorSettings.length}, 1fr)` }}>
+      <div className="rotor-grid" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(140px, 1fr))` }}>
         {rotorSettings.map((setting, index) => (
           <RotorConfigControl
             key={setting.id}

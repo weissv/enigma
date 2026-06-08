@@ -34,11 +34,12 @@ export const FrequencyChart: React.FC<FrequencyChartProps> = ({ analysis }) => {
 
   return (
     <div className="freq-chart">
-      <svg
-        viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ width: '100%', height: 'auto' }}
-      >
+      <div className="overflow-x-auto" style={{ width: '100%' }}>
+        <svg
+          viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ width: '100%', minWidth: '400px', height: 'auto' }}
+        >
         {/* Horizontal reference lines */}
         {[0.02, 0.06, 0.10].map(v => {
           if (v > maxFreq) return null;
@@ -98,6 +99,7 @@ export const FrequencyChart: React.FC<FrequencyChartProps> = ({ analysis }) => {
           );
         })}
       </svg>
+      </div>
       <div className="flex justify-between text-mono text-xs text-muted mt-sm" style={{ padding: '0 var(--gap-sm)' }}>
         <span>N = {analysis.totalLetters}</span>
         <span>χ² = {analysis.chiSquared.toFixed(2)}</span>

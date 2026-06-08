@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ onShare }) => {
       <h1 className="app-header__title">{t('headerTitle')}</h1>
       <p className="app-header__subtitle">{t('headerSubtitle')}</p>
     </div>
-    <div className="text-mono text-xs text-muted flex gap-md align-center" style={{ alignItems: 'center' }}>
+    <div className="text-mono text-xs text-muted flex gap-md align-center" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
       <button
         className="btn btn--sm"
         onClick={() => setLang(lang === 'EN' ? 'RU' : 'EN')}

@@ -153,6 +153,13 @@ h1, h2, h3, h4 {
   min-height: 100vh;
 }
 
+@media (max-width: 768px) {
+  .app-container {
+    padding: var(--gap-sm);
+    gap: var(--gap-sm);
+  }
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(380px, 450px) 1fr minmax(350px, 420px);
@@ -381,6 +388,14 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid var(--border-dim);
 }
 
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-sm);
+  }
+}
+
 .app-header__title {
   font-family: var(--font-mono);
   font-size: 1.23rem;
@@ -388,6 +403,13 @@ h1, h2, h3, h4 {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-accent);
+}
+
+@media (max-width: 600px) {
+  .app-header__title {
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+  }
 }
 
 .app-header__subtitle {
@@ -409,14 +431,20 @@ h1, h2, h3, h4 {
 
 /* ── Control Panel ───────────────────────────────────────────────── */
 .rotor-grid {
-  display: flex;
+  display: grid;
   gap: var(--gap-sm);
-  justify-content: space-between;
 }
 
-.rotor-grid > * {
-  flex: 1 1 0;
-  min-width: 0;
+@media (max-width: 600px) {
+  .rotor-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .rotor-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .rotor-config {
@@ -445,6 +473,13 @@ h1, h2, h3, h4 {
   gap: var(--gap-md);
   padding: var(--gap-sm) var(--gap-md);
   margin-top: var(--gap-sm);
+}
+
+@media (max-width: 600px) {
+  .reflector-config {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 }
 
 /* ── I/O Area ────────────────────────────────────────────────────── */
@@ -777,6 +812,7 @@ h1, h2, h3, h4 {
 .gap-lg { gap: var(--gap-lg); }
 .w-full { width: 100%; }
 .text-center { text-align: center; }
+.overflow-x-auto { overflow-x: auto; }
 .mt-sm { margin-top: var(--gap-sm); }
 .mt-md { margin-top: var(--gap-md); }
 .mt-lg { margin-top: var(--gap-lg); }

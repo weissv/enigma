@@ -38,7 +38,7 @@ const IC_CSS: Record<ICInterpretation, string> = {
 export const ICDisplay: React.FC<ICDisplayProps> = ({ icResult }) => {
   if (!icResult) {
     return (
-      <div className="ic-display">
+      <div className="ic-display" style={{ flexWrap: 'wrap' }}>
         <span className="text-mono text-sm text-muted">IC data unavailable</span>
       </div>
     );
@@ -52,7 +52,7 @@ export const ICDisplay: React.FC<ICDisplayProps> = ({ icResult }) => {
   const meterPercent = Math.min(100, Math.max(0, (ic / 0.08) * 100));
 
   return (
-    <div className="ic-display">
+    <div className="ic-display" style={{ flexWrap: 'wrap' }}>
       <div className="ic-meta">
         <span className="ic-meta__label">Index of Coincidence</span>
         <span className={`ic-value ${IC_CSS[interp]}`}>

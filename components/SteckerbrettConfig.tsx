@@ -71,7 +71,7 @@ export const SteckerbrettConfig: React.FC<SteckerbrettConfigProps> = ({ config, 
         </span>
       </div>
 
-      <div className="flex gap-sm items-start mb-md">
+      <div className="flex gap-sm items-start mb-md" style={{ flexWrap: 'wrap' }}>
         <div style={{ flex: 1 }}>
           <input
             type="text"
